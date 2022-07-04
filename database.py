@@ -212,6 +212,7 @@ class instructorController():
         except Exception as e:
             return False
 
+
     def updateInstructor(self, idVal, newID = None, pword = None, fName=None, lName=None, titleVal=None, yearHired=None, departmentVal=None,emailVal=None):
         '''search STUDENT by id, return as dict'''
         instr = INSTRUCTOR.select().where(INSTRUCTOR == idVal).get()
@@ -237,7 +238,7 @@ class instructorController():
 
 class adminController():
     def createAdmin(self, idVal, pword, fName, lName, titleVal, officeVal, emailVal):
-        ADMIN.create(UID = idVal, PASSWORD=pword, FIRSTNAME = fName, SURNAME = lName, TITLE = titleVal, OFFICE = officeVal, EMAIL = emailVal)
+        ADMIN.create(UID = idVal, PASSWORD=pword, NAME = fName, SURNAME = lName, TITLE = titleVal, OFFICE = officeVal, EMAIL = emailVal)
 
     def removeAdmin(self, idNum):
         '''remove ADMIN based on uid'''

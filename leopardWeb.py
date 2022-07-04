@@ -2,48 +2,56 @@ from database import *
 
 class user:
     def __init__(self):
-        self.student = studentController()
-        self.instructor= instructorController()
-        self.admin = adminController()
-        self.course= courseController()
+        self.stud = studentController()
+        self.inst= instructorController()
+        self.adm = adminController()
+        self.crs= courseController()
     
     def searchCourseByName(self, name):
-        return self.course.searchCourseByName(name)
+        return self.crs.searchCourseByName(name)
 
     def searchCourseByCrn(self, crn):
-        return self.course.searchCourseByCrn(crn)
+        return self.crs.searchCourseByCrn(crn)
 
 class student(user):    
     def login(self, uid, password):
-        logRet = self.student.checkLogin(uid, password)
+        logRet = self.stud.checkLogin(uid, password)
         if logRet == True:
             self.uid = uid
 
         return logRet
     
     def addClass(self, crn):
-        self.course.addStudentTo(self.uid, crn)
+        self.crs.addStudentTo(self.uid, crn)
     
     def dropClass(self, crn):
-        self.course.removeStudentFrom(self.uid, crn)
+        self.crs.removeStudentFrom(self.uid, crn)
 
     def printSchedule(self):
-        return self.student.printSchedule(self.uid)
+        return self.stud.printSchedule(self.uid)
 
 class instructor(user):
     def login(self, uid, password):
-        self.instructor.checkLogin(uid, password)
+        logRet = self.inst.checkLogin(uid, password)
+        if logRet == True:
+            self.uid = uid
+
+        return logRet
 
     def printSchedule(self):
-        return self.instructor.printSchedule(self.uid)
+        return self.inst.printSchedule(self.uid)
 
     def printClassList(self, crn):
-        return self.course.printRoster(crn)
+        return self.crs.printRoster(crn)
 
 class admin(user):
     def login(self, uid, password):
-        self.admin.checkLogin(uid, password)
+        logRet = self.adm.checkLogin(uid, password)
+        if logRet == True:
+            self.uid = uid
 
+        return logRet
+        
     def searchClass(self, name):
         return "Function called successfully"
     
@@ -111,7 +119,6 @@ class leopardWeb():
 
         retry = True
         while(retry):
-            print("Welcome, " + self.student.getFirstName() + " " + self.student.getLastName() + "!")
             print("Please select an option:")
             print("1. Search for a class")
             print("2. Add a class")
@@ -154,7 +161,7 @@ class leopardWeb():
             idNum = input("ID: ")
             print("Please enter your password:")
             pword = input("Password: ")
-            login = self.login(idNum, pword)
+            login = self.admin.login(idNum, pword)
             if login:
                 retry = False
             else:
@@ -175,7 +182,6 @@ class leopardWeb():
                 print("Invalid ID or password. Please try again.")
         retry = True
         while(retry):
-            print("Welcome, " + self.instructor.getFirstName() + " " + self.instructor.getLastName() + "!")
             print("Please select an option:")
             print("1. Search for a class")
             print("2. Print your schedule")
