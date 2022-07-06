@@ -1,6 +1,7 @@
 from asyncio.windows_events import NULL
 from database import *  
 
+#Brennan
 class user:
     def __init__(self):
         self.stud = studentController()
@@ -14,12 +15,15 @@ class user:
     def searchCourseByCrn(self, crn):
         return self.crs.searchCourseByCrn(crn)
 
+    #Zach
     def searchCourseByTime(self, time):
         return self.crs.searchCourseByTime(time)
 
     def searchCourseByDay(self, days):
         return self.crs.searchCourseByDay(days)
+    #End Zach
 
+#Brennan
 class student(user):    
     def login(self, uid, password):
         logRet = self.stud.checkLogin(uid, password)
@@ -57,10 +61,9 @@ class admin(user):
             self.uid = uid
 
         return logRet
-        
-    def searchClass(self, name):                #search for a class, print info
-        return self.crs.searchCourseByName()
+ #End Brennan
     
+    #Zach
     def addCourse(self, crn, title, dept, time, days, semester, year, credits, instructor):     #add course to COURSE db
         return self.crs.createCourse(crn, title, dept, time, days, semester, year, credits, instructor)
     
@@ -90,9 +93,11 @@ class admin(user):
 
     def removeAdmin(self, uid):                 #remove admin from ADMIN db
         return self.adm.removeAdmin(uid)
+    #End Zach
 
+#Brennan
     def printRoster(self, crn):
-        return self.crs.printRoster()
+        return self.crs.printRoster(crn)
 
 
 class leopardWeb():
@@ -184,7 +189,9 @@ class leopardWeb():
                 retry = False
             else:
                 print("Invalid ID or password. Please try again.")
+#Brennan end
 
+        #Zach
         retry = True
         while (retry):
             print("Please select an option:")
@@ -207,11 +214,13 @@ class leopardWeb():
                 if res == "1":#search course by name
                     print("Please enter the name of the class:")
                     name = input("Name: ")
-                    self.admin.searchCourseByName(name)
+                    crs = self.admin.searchCourseByName(name)
+                    print(crs)
                 elif res == "2":#search course by CRN
                     print("Please enter the CRN of the class:")
                     crn = input("CRN: ")
-                    self.admin.searchCourseByCrn(crn)
+                    crs = self.admin.searchCourseByCrn(crn)
+                    print(crs.title)
                 elif res == "3":#search course by meeting days
                     print("M = Monday")
                     print("T = Tuesday")
@@ -221,12 +230,18 @@ class leopardWeb():
                     print("Combine days with no spaces - such as (MWF) or (TR)")
                     print("Please enter the meeting days of the class:")
                     days = input("Meeting Days: ")
-                    self.admin.searchCourseByDay(self, days)
+                    crs_list = self.admin.searchCourseByDay(days)
+                    for i in range(4):
+                        print(crs_list[0][i] + ' | ' + str(crs_list[1][i]) + ' | ' + crs_list[2][i] + ' | ' + str(crs_list[3][i]))
+                    
+
                 elif res == "4":#search course by meeting time
                     print("Format is: (1:00pm-2:50pm)")
                     print("Please enter the meeting time of the class:")
-                    times = input("Meeting times: ")
-                    self.admin.searchCourseByMeetTime(self, times)
+                    time = input("Meeting time: ")
+                    crs_list = self.admin.searchCourseByTime(time)
+                    for i in range(4):
+                        print(crs_list[0][i] + ' | ' + str(crs_list[1][i]) + ' | ' + crs_list[2][i] + ' | ' + str(crs_list[3][i]))
                 else: 
                         print("Invalid input.")
             elif res == "2":            #add course
@@ -298,10 +313,10 @@ class leopardWeb():
                 res = input("Enter your choice: ")
                 if res == "1":#remove student
                     uid = input("Enter student id: ")
-                    return self.admin.removeStudent(uid)
+                    self.admin.removeStudent(uid)
                 elif res == "2":#remove instructor
                     uid = input("Enter instructor id: ")
-                    return self.admin.removeInstructor(uid)
+                    self.admin.removeInstructor(uid)
                 elif res == "3":#remove admin
                     uid = input("Enter admin id: ")
                     self.admin.removeAdmin(uid)
@@ -310,15 +325,17 @@ class leopardWeb():
             elif res == "8":            #print roster of a course
                 print("Please enter the CRN of the course")
                 crn = input("CRN: ")
-                return self.admin.printRoster(crn)
+                student_list = self.admin.printRoster(crn)
+                for student in student_list:
+                    print (student.NAME + " | " + student.UID)
+
             elif res == "9":            #logout
                 self.menu()
             else:
                 print("Invalid Input.")
-                    
+    #Zach end               
 
-
-
+#Brennan
     def instructor(self):
         retry = True
         while(retry):
@@ -359,7 +376,12 @@ class leopardWeb():
             elif res == "3":
                 print("Please enter the CRN of the class:")
                 crn = input("CRN: ")
-                self.instructor.printClassList(crn)
+                #Zach - added fix to print info properly
+                #now displays as (student_name | student_id)
+                student_list = self.instructor.printRoster(crn)
+                for student in student_list:
+                    print (student.NAME + " | " + student.UID)
+
             elif res == "4":
                 self.menu()
 

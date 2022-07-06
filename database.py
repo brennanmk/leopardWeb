@@ -1,8 +1,10 @@
 from pickle import NONE
+from turtle import title
 from peewee import *
 import argparse
 import sys
 
+#Brennan created whole database.py
 db = SqliteDatabase('leopardWeb.db')
 
 class BaseModel(Model):
@@ -67,19 +69,63 @@ class courseController():
         return crs.get()
 
     def searchCourseByName(self, nameVal):
-        '''search COURSE by name, return as dict'''
+        '''search COURSE by name, return as nested list'''
         crs = COURSE.select().where(COURSE.title == nameVal)
-        return crs.get()
+        crsTitles= []
+        crsInstr = []
+        crsTime = []
+        crsCredits = []
+        crsInfo = []
+        for entry in crs:
+            crsTitles.append(entry.title)
+            crsInstr.append(entry.instructor_id)
+            crsTime.append(entry.time)
+            crsCredits.append(entry.credit)
+        crsInfo.append(crsTitles)
+        crsInfo.append(crsInstr)
+        crsInfo.append(crsTime)
+        crsInfo.append(crsCredits)
+        return crsInfo
 
+    #Zach - added functions to search crs by some additional parameters
     def searchCourseByTime(self, timeVal):
-        # search COURSE by time, return as dict
+        # search COURSE by time, return as nested list
         crs = COURSE.select().where(COURSE.time == timeVal)
-        return crs.get()
+        crsTitles= []
+        crsInstr = []
+        crsTime = []
+        crsCredits = []
+        crsInfo = []
+        for entry in crs:
+            crsTitles.append(entry.title)
+            crsInstr.append(entry.instructor_id)
+            crsTime.append(entry.time)
+            crsCredits.append(entry.credit)
+        crsInfo.append(crsTitles)
+        crsInfo.append(crsInstr)
+        crsInfo.append(crsTime)
+        crsInfo.append(crsCredits)
+        return crsInfo
 
     def searchCourseByDay(self, dayVal):
-        # search COURSE by days, return as dict
+        # search COURSE by days, return as list
         crs = COURSE.select().where(COURSE.days == dayVal)
-        return crs.get()
+        crsTitles= []
+        crsInstr = []
+        crsTime = []
+        crsCredits = []
+        crsInfo = []
+        for entry in crs:
+            crsTitles.append(entry.title)
+            crsInstr.append(entry.instructor_id)
+            crsTime.append(entry.time)
+            crsCredits.append(entry.credit)
+        crsInfo.append(crsTitles)
+        crsInfo.append(crsInstr)
+        crsInfo.append(crsTime)
+        crsInfo.append(crsCredits)
+        return crsInfo
+        
     
     def addStudentTo(self, uid, crn):       #add student to course - update COURSE_LIST
         stud = STUDENT.get(STUDENT.UID == uid)
@@ -91,7 +137,7 @@ class courseController():
         crs = COURSE.get(COURSE.crn == crn)
         COURSE_LIST.delete().where(COURSE_LIST.students == stud).where(COURSE_LIST.course == crs).execute()
             
-    def printRoster(crn):   #print course roster
+    def printRoster(self, crn):
         crs = COURSE.select().where(COURSE.crn == crn)
         roster = COURSE_LIST.select().where(COURSE_LIST.course == crs)
         crsList = []
