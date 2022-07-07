@@ -1,5 +1,3 @@
-from pickle import NONE
-from turtle import title
 from peewee import *
 import argparse
 import sys
@@ -210,10 +208,13 @@ class studentController():
         for entry in COURSE_LIST:
             if entry.students == stud:
                 data = {}
-                data['title'] = entry.title
-                data['instructor'] = entry.instructor.NAME + " " + entry.course.instructor.SURNAME
-                data['time'] = entry.time
-                data['credit'] = entry.credit
+                data['title'] = entry.course.title
+                try: #check to see if instructor is assigned to course
+                    data['instructor'] = entry.instructor.NAME + " " + entry.course.instructor.SURNAME
+                except Exception as e:
+                    data['instructor'] = "N/A"
+                data['time'] = entry.course.time
+                data['credit'] = entry.course.credit
                 retList.append(data)
         return retList
 
@@ -266,7 +267,7 @@ class instructorController():
     def printSchedule(self, uid):
         inst = INSTRUCTOR.get(INSTRUCTOR.UID == uid)
         retList = []
-        for entry in COURSE:
+        for entry in COURSE_LIST:
             if entry.instructor == inst:
                 data = {}
                 data['title'] = entry.title
