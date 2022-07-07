@@ -4,12 +4,14 @@ from peewee import *
 import argparse
 import sys
 
-#Brennan created whole database.py
+# Brennan created whole database.py
 db = SqliteDatabase('leopardWeb.db')
+
 
 class BaseModel(Model):
     class Meta:
         database = db
+
 
 class STUDENT(BaseModel):
     UID = CharField(unique=True)
@@ -19,6 +21,7 @@ class STUDENT(BaseModel):
     GRADYEAR = CharField()
     MAJOR = CharField()
     EMAIL = CharField()
+
 
 class INSTRUCTOR(BaseModel):
     UID = CharField(unique=True)
@@ -30,6 +33,7 @@ class INSTRUCTOR(BaseModel):
     DEPT = CharField()
     EMAIL = CharField()
 
+
 class ADMIN(BaseModel):
     UID = CharField(unique=True)
     PASSWORD = CharField()
@@ -39,8 +43,9 @@ class ADMIN(BaseModel):
     OFFICE = CharField()
     EMAIL = CharField()
 
+
 class COURSE(BaseModel):
-    crn = IntegerField(unique=True)
+    crn = CharField(unique=True)
     title = CharField()
     department = CharField()
     time = CharField()
@@ -50,14 +55,17 @@ class COURSE(BaseModel):
     credit = IntegerField()
     instructor = ForeignKeyField(INSTRUCTOR, backref='courses')
 
+
 class COURSE_LIST(BaseModel):
     students = ForeignKeyField(STUDENT, backref='courses')
     course = ForeignKeyField(COURSE, backref='courses')
 
+
 class courseController():
     def createCourse(self, crnEntry, titleEntry, departmentEntry, dayEntry, timeEntry, semesterEntry, yearEntry, creditEntry, instructorEntry):
         instr = INSTRUCTOR.get(INSTRUCTOR.UID == instructorEntry)
-        COURSE.create(crn = crnEntry, title = titleEntry, department = departmentEntry, time = timeEntry, days = dayEntry, semester = semesterEntry, year = yearEntry, credit = creditEntry, instructor = instr)
+        COURSE.create(crn=crnEntry, title=titleEntry, department=departmentEntry, time=timeEntry,
+                      days=dayEntry, semester=semesterEntry, year=yearEntry, credit=creditEntry, instructor=instr)
 
     def removeCourse(self, crnVal):
         '''remove COURSE based on CRN'''
@@ -66,83 +74,78 @@ class courseController():
     def searchCourseByCrn(self, crnVal):
         '''search COURSE by crn, return as dict'''
         crs = COURSE.select().where(COURSE.crn == crnVal)
-        return crs.get()
-
-    def searchCourseByName(self, nameVal):
-        '''search COURSE by name, return as nested list'''
-        crs = COURSE.select().where(COURSE.title == nameVal)
-        crsTitles= []
-        crsInstr = []
-        crsTime = []
-        crsCredits = []
         crsInfo = []
         for entry in crs:
-            crsTitles.append(entry.title)
-            crsInstr.append(entry.instructor_id)
-            crsTime.append(entry.time)
-            crsCredits.append(entry.credit)
-        crsInfo.append(crsTitles)
-        crsInfo.append(crsInstr)
-        crsInfo.append(crsTime)
-        crsInfo.append(crsCredits)
+            csrEntry = {}
+            csrEntry['title'] = entry.title
+            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            csrEntry['time'] = entry.time
+            csrEntry['credit'] = entry.credit
+            crsInfo.append(csrEntry)
         return crsInfo
 
-    #Zach - added functions to search crs by some additional parameters
+    def searchCourseByName(self, nameVal):
+        # search COURSE by name, return as list
+        crs = COURSE.select().where(COURSE.title == nameVal)
+        crsInfo = []
+        for entry in crs:
+            csrEntry = {}
+            csrEntry['title'] = entry.title
+            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            csrEntry['time'] = entry.time
+            csrEntry['credit'] = entry.credit
+            crsInfo.append(csrEntry)
+        return crsInfo
+
+    # Zach - added functions to search crs by some additional parameters
     def searchCourseByTime(self, timeVal):
         # search COURSE by time, return as nested list
         crs = COURSE.select().where(COURSE.time == timeVal)
-        crsTitles= []
-        crsInstr = []
-        crsTime = []
-        crsCredits = []
         crsInfo = []
         for entry in crs:
-            crsTitles.append(entry.title)
-            crsInstr.append(entry.instructor_id)
-            crsTime.append(entry.time)
-            crsCredits.append(entry.credit)
-        crsInfo.append(crsTitles)
-        crsInfo.append(crsInstr)
-        crsInfo.append(crsTime)
-        crsInfo.append(crsCredits)
+            csrEntry = {}
+            csrEntry['title'] = entry.title
+            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            csrEntry['time'] = entry.time
+            csrEntry['credit'] = entry.credit
+            crsInfo.append(csrEntry)
         return crsInfo
 
     def searchCourseByDay(self, dayVal):
         # search COURSE by days, return as list
         crs = COURSE.select().where(COURSE.days == dayVal)
-        crsTitles= []
-        crsInstr = []
-        crsTime = []
-        crsCredits = []
         crsInfo = []
         for entry in crs:
-            crsTitles.append(entry.title)
-            crsInstr.append(entry.instructor_id)
-            crsTime.append(entry.time)
-            crsCredits.append(entry.credit)
-        crsInfo.append(crsTitles)
-        crsInfo.append(crsInstr)
-        crsInfo.append(crsTime)
-        crsInfo.append(crsCredits)
+            csrEntry = {}
+            csrEntry['title'] = entry.title
+            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            csrEntry['time'] = entry.time
+            csrEntry['credit'] = entry.credit
+            crsInfo.append(csrEntry)
         return crsInfo
-        
-    
-    def addStudentTo(self, uid, crn):       #add student to course - update COURSE_LIST
+
+    def addStudentTo(self, uid, crn):  # add student to course - update COURSE_LIST
         stud = STUDENT.get(STUDENT.UID == uid)
         crsEntry = COURSE.get(COURSE.crn == crn)
-        COURSE_LIST.create(students = stud, course = crsEntry)
-    
-    def removeStudentFrom(self, uid, crn):  #remove student from course - update COURSE_LIST
+        COURSE_LIST.create(students=stud, course=crsEntry)
+
+    # remove student from course - update COURSE_LIST
+    def removeStudentFrom(self, uid, crn):
         stud = STUDENT.get(STUDENT.UID == uid)
         crs = COURSE.get(COURSE.crn == crn)
-        COURSE_LIST.delete().where(COURSE_LIST.students == stud).where(COURSE_LIST.course == crs).execute()
-            
+        COURSE_LIST.delete().where(COURSE_LIST.students == stud).where(
+            COURSE_LIST.course == crs).execute()
+
     def printRoster(self, crn):
         crs = COURSE.select().where(COURSE.crn == crn)
         roster = COURSE_LIST.select().where(COURSE_LIST.course == crs)
         crsList = []
         for entry in roster:
-            crsList.append(entry.students)
+            data = {}
+            data['uid'] = entry.students.UID
+            data['name'] = entry.students.NAME + " " + entry.students.SURNAME
+            data['email'] = entry.students.EMAIL
+            crsList.append(data)
         return crsList
 
     def updateCourse(self, crnEntry=None, titleEntry=None, departmentEntry=None, timeEntry=None, dayEntry=None, semesterEntry=None, yearEntry=None, creditEntry=None, instructorEntry=None):
@@ -182,13 +185,15 @@ class courseController():
             except Exception as e:
                 instList.append(instQuery.NAME)
 
-            retList.append({entry.title:instList})
-        
+            retList.append({entry.title: instList})
+
         return retList
+
 
 class studentController():
     def createStudent(self, idVal, pword, fName, lName, expecGrad, majorVal, emailVal):
-        STUDENT.create(UID = idVal, PASSWORD = pword, NAME = fName, SURNAME = lName, GRADYEAR = expecGrad, MAJOR = majorVal, EMAIL = emailVal)
+        STUDENT.create(UID=idVal, PASSWORD=pword, NAME=fName, SURNAME=lName,
+                       GRADYEAR=expecGrad, MAJOR=majorVal, EMAIL=emailVal)
 
     def removeStudent(self, idNum):
         '''remove STUDENT based on uid'''
@@ -204,7 +209,12 @@ class studentController():
         retList = []
         for entry in COURSE_LIST:
             if entry.students == stud:
-                retList.append(entry.course.title)
+                data = {}
+                data['title'] = entry.title
+                data['instructor'] = entry.instructor.NAME + " " + entry.course.instructor.SURNAME
+                data['time'] = entry.time
+                data['credit'] = entry.credit
+                retList.append(data)
         return retList
 
     def checkLogin(self, uid, pword):
@@ -217,10 +227,10 @@ class studentController():
         except Exception as e:
             return False
 
-    def updateStudent(self, idVal, newID = None, pword = None, fName=None, lName=None, expecGrad=None, majorVal=None, emailVal=None):
+    def updateStudent(self, idVal, newID=None, pword=None, fName=None, lName=None, expecGrad=None, majorVal=None, emailVal=None):
         '''update STUDENT, set any vals that should not be changed to null'''
         stud = STUDENT.select().where(STUDENT.UID == idVal).get()
-        
+
         if newID != None:
             stud.UID = newID
         if pword != None:
@@ -238,9 +248,11 @@ class studentController():
 
         stud.save()
 
+
 class instructorController():
     def createInstructor(self, idVal, pword, fName, lName, titleVal, yearHired, departmentVal, emailVal):
-        INSTRUCTOR.create(UID = idVal, PASSWORD = pword, NAME = fName, SURNAME = lName, TITLE = titleVal, HIREYEAR = yearHired, DEPT = departmentVal, EMAIL = emailVal)
+        INSTRUCTOR.create(UID=idVal, PASSWORD=pword, NAME=fName, SURNAME=lName,
+                          TITLE=titleVal, HIREYEAR=yearHired, DEPT=departmentVal, EMAIL=emailVal)
 
     def removeInstructor(self, idNum):
         '''remove INSTRUCTOR based on uid'''
@@ -250,13 +262,18 @@ class instructorController():
         '''search INSTRUCTOR by id, return as dict'''
         inst = INSTRUCTOR.select().where(INSTRUCTOR.UID == idVal)
         return inst.get()
-    
+
     def printSchedule(self, uid):
         inst = INSTRUCTOR.get(INSTRUCTOR.UID == uid)
         retList = []
         for entry in COURSE:
             if entry.instructor == inst:
-                retList.append(entry.title)
+                data = {}
+                data['title'] = entry.title
+                data['crn'] = entry.crn
+                data['time'] = entry.time
+                data['days'] = entry.days
+                retList.append(data)
         return retList
 
     def checkLogin(self, uid, pword):
@@ -269,8 +286,7 @@ class instructorController():
         except Exception as e:
             return False
 
-
-    def updateInstructor(self, idVal, newID = None, pword = None, fName=None, lName=None, titleVal=None, yearHired=None, departmentVal=None,emailVal=None):
+    def updateInstructor(self, idVal, newID=None, pword=None, fName=None, lName=None, titleVal=None, yearHired=None, departmentVal=None, emailVal=None):
         '''search STUDENT by id, return as dict'''
         instr = INSTRUCTOR.select().where(INSTRUCTOR == idVal).get()
 
@@ -290,12 +306,14 @@ class instructorController():
             instr.DEPT = departmentVal
         if emailVal != None:
             instr.EMAIL = emailVal
-            
+
         instr.save()
+
 
 class adminController():
     def createAdmin(self, idVal, pword, fName, lName, titleVal, officeVal, emailVal):
-        ADMIN.create(UID = idVal, PASSWORD=pword, NAME = fName, SURNAME = lName, TITLE = titleVal, OFFICE = officeVal, EMAIL = emailVal)
+        ADMIN.create(UID=idVal, PASSWORD=pword, NAME=fName, SURNAME=lName,
+                     TITLE=titleVal, OFFICE=officeVal, EMAIL=emailVal)
 
     def removeAdmin(self, idNum):
         '''remove ADMIN based on uid'''
@@ -316,7 +334,7 @@ class adminController():
         except Exception as e:
             return False
 
-    def updateAdmin(self, idVal, newID = None, pword=None, fName=None, lName=None, titleVal=None, OfficeVal=None, emailVal=None):
+    def updateAdmin(self, idVal, newID=None, pword=None, fName=None, lName=None, titleVal=None, OfficeVal=None, emailVal=None):
         '''search STUDENT by id, return as dict'''
         adm = ADMIN.select().where(ADMIN.UID == idVal).get()
 
@@ -334,16 +352,15 @@ class adminController():
             adm.OFFICE = OfficeVal
         if emailVal != None:
             adm.EMAIL = emailVal
-            
+
         adm.save()
 
 
 if __name__ == '__main__':
-    #Run this file on its own to create COURSE table
+    # Run this file on its own to create COURSE table
     parser = argparse.ArgumentParser("Create databases or delete databases.")
     parser.add_argument('mode', type=str,
                         help='flag, if c then create database tables if d delete')
-
 
     args = parser.parse_args(sys.argv[1:])
     db.connect()
