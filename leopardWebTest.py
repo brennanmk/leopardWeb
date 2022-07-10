@@ -3,6 +3,8 @@ from leopardWeb import *
 from database import *
 from leopardWeb import admin
 
+#TODO: Fix search functions so they return False when no result is found
+
 class adminTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -24,10 +26,9 @@ class adminTest(unittest.TestCase):
         self.assertTrue(self.adm.login(90287, 'slyOmen12'), 
                         "Expected successful login")
 
-    #Admin tests
+    #test creating admin
     def testCreateAdmin(self):
         ret = self.adm.addAdmin(67824, 'pword', 'Tom', 'Cat', 'Registrar', 'Williston110', 'catt')
-
         self.assertTrue(ret)
 
     #test adding a course to the system
@@ -45,7 +46,7 @@ class adminTest(unittest.TestCase):
         ret = self.adm.removeCourse(000000)
         self.assertTrue(ret)
     
-        #Admin tests
+    #test deleting admin
     def testDeleteAdmin(self):
         ret = self.adm.removeAdmin(67824)
         self.assertTrue(ret)
@@ -55,13 +56,50 @@ class adminTest(unittest.TestCase):
         self.admin.removeAdmin(90287)
         self.instructor.removeInstructor(201100)
 
+
 class userTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.user = user()
+        self.inst = instructorController()
+        self.course = courseController()
 
-    #TODO: Add tests for course searching
+        self.inst.createInstructor(20110, 'pword', 'Aaron', 'Carpenter', 'Assistant Professor', '2002', 'Electrical', 'acarpenter')
+        self.course.createCourse(401142, "Cyber-Physical Systems", "BSEE", "MWF", "1:00pm-2:50pm", "Spring", "2022", 3, 20110)
+        self.course.createCourse(401156, "Computer Architecture", "BSCO", "TR", "4:00pm-6:00pm", "Spring", "2022", 3, 20110)
+        self.course.createCourse(401532, "Parallel Programming", "BCOS", "MWR", "11:00am-12:00pm", "Spring", "2022", 3, 20110)
 
+    #test search course by CRN
+    def testSearchCourseByCRN(self):
+        self.assertTrue(self.user.searchCourseByCrn(401142))
+
+    #test search course by invalid CRN
+#    def testSearchCourseByFalseCRN(self):
+#        self.assertFalse(self.user.searchCourseByCrn(0000000))
+
+    #test search course by name
+#    def testSearchCourseByName(self):
+#        self.assertTrue(self.user.searchCourseByName('Computer Architecture'))
+
+    #test search course by invalid name
+#    def testSearchCourseByFalseName(self):
+#        self.assertFalse(self.user.searchCourseByName('Course Name'))
+        
+    #test search course by days
+    def testSearchCourseByDays(self):
+        self.assertTrue(self.user.searchCourseByDay('MWR'))
+
+    #test search course by invalid days
+#    def testSearchCourseByFalseDays(self):
+#        self.assertFalse(self.user.searchCourseByDay('days'))
+
+    #test search course by time
+    def testSearchCourseByTime(self):
+        self.assertTrue(self.user.searchCourseByTime('1:00pm-2:50pm'))
+
+    #test search course by invalid time
+#    def testSearchCourseByFalseTime(self):
+#        self.assertFalse(self.user.searchCourseByTime('time'))
 
 class instructorTest(unittest.TestCase):
     @classmethod
@@ -153,6 +191,9 @@ class studentTest(unittest.TestCase):
         self.studentCont.removeStudent(301823)
         self.instructor.removeInstructor(201100)
         self.course.removeCourse(4011422)
+
+
+
 if __name__ == '__main__':
     unittest.main()
     
