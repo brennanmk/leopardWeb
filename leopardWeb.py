@@ -13,7 +13,7 @@ class user:
     def searchCourseByName(self, name):
         try:
             data = self.crs.searchCourseByName(name)
-
+            
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
@@ -23,10 +23,10 @@ class user:
     def searchCourseByCrn(self, crn):
         try:
             data = self.crs.searchCourseByCrn(crn)
-
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return data
         except Exception as e:
             print("No Classes Found")
 
@@ -129,15 +129,19 @@ class admin(user):
         try:
             self.crs.createCourse(crn, title, dept, time, days, semester, year, creditVal, instructor)
             print("Course added")
+            self.course_been_added = True
         except Exception as e:
             print("Error: Course already exists")
+            self.course_been_added = False
 
     def removeCourse(self, crn):  # remove course from COURSE db
         try:
             self.crs.removeCourse(crn)
             print("Course removed")
+            self.course_been_removed = True
         except Exception as e:
             print("Error: Course not found")
+            self.course_been_removed = False
 
     def addStudentTo(self, uid, crn):  # add student to course list for specified course
         try:
