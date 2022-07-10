@@ -2,7 +2,6 @@ from database import *
 
 # Brennan
 
-
 class user:
     def __init__(self):
         self.stud = studentController()
@@ -17,8 +16,10 @@ class user:
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
             print("No Classes Found")
+            return False
 
     def searchCourseByCrn(self, crn):
         try:
@@ -27,8 +28,10 @@ class user:
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
             print("No Classes Found")
+            return False
 
     # Zach
     def searchCourseByTime(self, time):
@@ -38,8 +41,10 @@ class user:
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
-            print("No Classes Found")       
+            print("No Classes Found")
+            return False       
 
     def searchCourseByDay(self, days):
         try:
@@ -48,8 +53,10 @@ class user:
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
             print("No Classes Found")
+            return False
     # End Zach
 
 # Brennan
@@ -66,15 +73,19 @@ class student(user):
         try:
             self.crs.addStudentTo(self.uid, crn)
             print("Class Added")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def dropClass(self, crn):
         try:
             self.crs.removeStudentFrom(self.uid, crn)
             print("Class Dropped")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def printSchedule(self):
         try:
@@ -83,8 +94,10 @@ class student(user):
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
             print("No Classes Found")
+            return False
 
 
 class instructor(user):
@@ -102,16 +115,20 @@ class instructor(user):
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return True
         except Exception as e:
             print("No Classes Found")
+            return False
 
     def printClassList(self, crn):
         try:
             data = self.crs.printRoster(crn)
             for val in data:
                 print(f"{val['uid']} | {val['name']}" | {val['email']})
+            return True
         except Exception as e:
             print("Error")
+            return False
 
 
 class admin(user):
@@ -129,74 +146,94 @@ class admin(user):
         try:
             self.crs.createCourse(crn, title, dept, time, days, semester, year, creditVal, instructor)
             print("Course added")
+            return True
         except Exception as e:
             print("Error: Course already exists")
+            return False
 
     def removeCourse(self, crn):  # remove course from COURSE db
         try:
             self.crs.removeCourse(crn)
             print("Course removed")
+            return True
         except Exception as e:
             print("Error: Course not found")
+            return False
 
     def addStudentTo(self, uid, crn):  # add student to course list for specified course
         try:
             self.crs.addStudentTo(uid, crn)
             print("Student added to course")
+            return True
         except Exception as e:
             print("Error: Student already in course")
+            return False
 
     # remove student from course list for specified course
     def removeStudentTo(self, uid, crn):
         try:
             self.crs.removeStudentFrom(uid, crn)
             print("Student removed from course")
+            return True
         except Exception as e:
             print("Error: Student not in course")
+            return False
 
     # add student to STUDENT db
     def addStudent(self, uid, pword, fname, lname, gradyear, major, email):
         try:
             self.stud.createStudent(uid, pword, fname, lname, gradyear, major, email)
             print("Student added")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     # add instructor to INSTRUCTOR db
     def addInstructor(self, uid, pword, fname, lname, title, hireyear, dept, email):
         try:
             self.inst.createInstructor(uid, pword, fname, lname, title, hireyear, dept, email)
             print("Instructor added")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def addAdmin(self, uid, pword, fname, lname, title, office, email):  # add admin to ADMIN db
         try:
             self.adm.createAdmin(uid, pword, fname, lname, title, office, email)
             print("Admin added")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def removeStudent(self, uid):  # remove student from STUDENT db
         try:
             self.stud.removeStudent(uid)
             print("Student removed")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def removeInstructor(self, uid):  # remove instructor from INSTRUCTOR db
         try:
             self.inst.removeInstructor(uid)
             print("Instructor removed")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
     def removeAdmin(self, uid):  # remove admin from ADMIN db
         try:
             self.adm.removeAdmin(uid)
             print("Admin removed")
+            return True
         except Exception as e:
             print("Error")
+            return False
     # End Zach
 
 # Brennan
@@ -205,8 +242,10 @@ class admin(user):
             data = self.crs.printRoster(crn)
             for val in data:
                 print(f"{val['uid']} | {val['name']} | {val['email']}")
+            return True
         except Exception as e:
             print("Error")
+            return False
 
 class leopardWeb():
     def __init__(self):
