@@ -1,3 +1,4 @@
+from ctypes.wintypes import PWORD
 import unittest
 from leopardWeb import *
 from database import *
@@ -30,11 +31,26 @@ class adminTest(unittest.TestCase):
     def testCreateAdmin(self):
         ret = self.adm.addAdmin(67824, 'pword', 'Tom', 'Cat', 'Registrar', 'Williston110', 'catt')
         self.assertTrue(ret)
+    
+    #test creating admin with invalid UID
+    def testCreateFalseAdmin(self):
+        ret = self.adm.addAdmin(67824, 'pword', 'Tom', 'Cat', 'Registrar', 'Williston110', 'catt')
+        self.assertFalse(ret)
+
+    #test deleting admin
+    def testDeleteAdmin(self):
+        ret = self.adm.removeAdmin(67824)
+        self.assertTrue(ret)
 
     #test adding a course to the system
     def testAddCourse(self):
         ret = self.adm.addCourse(918026, 'Applied Programming Concepts', 'BSCS', '8:00am-9:50am', 'TR', 'Spring', '2022', 3, 201100)
         self.assertTrue(ret)
+
+    #test adding an invalid course
+    def testAddInvalidCourse(self):
+        ret = self.adm.addCourse(918026, 'Applied Programming Concepts', 'BSCS', '8:00am-9:50am', 'TR', 'Spring', '2022', 3, 201100)
+        self.assertFalse(ret)
 
     #test removing course from system
     def testRemoveCourse(self):
@@ -44,11 +60,6 @@ class adminTest(unittest.TestCase):
     #test incorrectly removing course from system
     def testRemoveFalseCourse(self):
         ret = self.adm.removeCourse(000000)
-        self.assertTrue(ret)
-    
-    #test deleting admin
-    def testDeleteAdmin(self):
-        ret = self.adm.removeAdmin(67824)
         self.assertTrue(ret)
 
     @classmethod
@@ -98,6 +109,10 @@ class userTest(unittest.TestCase):
     #test search course by invalid time
     def testSearchCourseByFalseTime(self):
         self.assertFalse(self.user.searchCourseByTime('time'))
+
+    #test print course
+    def testPrintCourse(self):
+        self.assertTrue(self.user.printCourse())
 
     @classmethod
     def tearDownClass(self):

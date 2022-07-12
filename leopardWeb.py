@@ -9,6 +9,20 @@ class user:
         self.adm = adminController()
         self.crs = courseController()
 
+    def printCourse(self):
+        try:
+            ret = False
+            data = self.crs.printCourse()
+
+            for val in data:
+                ret = True
+                print(
+                    f"{val['crn']} | {val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+            return ret
+        except Exception as e:
+            print("No Classes Found")
+            return False        
+
     def searchCourseByName(self, name):
         try:
             ret = False
@@ -215,6 +229,7 @@ class admin(user):
         except Exception as e:
             print("Error")
             return False
+            
 
     def removeStudent(self, uid):  # remove student from STUDENT db
         try:
@@ -379,6 +394,7 @@ class leopardWeb():
                 print("2. Search for a class by CRN")
                 print("3. Search for a class by meeting day")
                 print("4. Search for a class by meeting time")
+                print("5. Print all courses")
                 res = input("Enter your choice: ")
                 if res == "1":  # search course by name
                     print("Please enter the name of the class:")
@@ -406,7 +422,8 @@ class leopardWeb():
                     print("Please enter the meeting time of the class:")
                     time = input("Meeting time: ")
                     self.admin.searchCourseByTime(time)
-
+                elif res == "5":  # print all courses
+                    self.admin.printCourse()
                 else:
                     print("Invalid input.")
             elif res == "2":  # add course

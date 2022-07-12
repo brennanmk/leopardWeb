@@ -69,6 +69,20 @@ class courseController():
         '''remove COURSE based on CRN'''
         COURSE.delete().where(COURSE.crn == crnVal).execute()
 
+    def printCourse(self):
+        crs = COURSE.select()
+        crsInfo = []
+        for entry in crs:
+            csrEntry = {}
+            csrEntry['crn'] = entry.crn
+            csrEntry['title'] = entry.title
+            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            csrEntry['time'] = entry.time
+            csrEntry['credit'] = entry.credit
+            crsInfo.append(csrEntry)
+        return crsInfo
+
+
     def searchCourseByCrn(self, crnVal):
         '''search COURSE by crn, return as dict'''
         crs = COURSE.select().where(COURSE.crn == crnVal)
