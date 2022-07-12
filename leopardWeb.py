@@ -11,24 +11,28 @@ class user:
 
     def searchCourseByName(self, name):
         try:
+            ret = False
             data = self.crs.searchCourseByName(name)
 
             for val in data:
+                ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
-            return True
+            return ret
         except Exception as e:
             print("No Classes Found")
             return False
 
     def searchCourseByCrn(self, crn):
         try:
+            ret = False
             data = self.crs.searchCourseByCrn(crn)
 
             for val in data:
+                ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
-            return True
+            return ret
         except Exception as e:
             print("No Classes Found")
             return False
@@ -36,24 +40,28 @@ class user:
     # Zach
     def searchCourseByTime(self, time):
         try:
+            ret = False
             data = self.crs.searchCourseByTime(time)
 
             for val in data:
+                ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
-            return True
+            return ret
         except Exception as e:
             print("No Classes Found")
             return False       
 
     def searchCourseByDay(self, days):
         try:
+            ret = False
             data = self.crs.searchCourseByDay(days)
 
             for val in data:
+                ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
-            return True
+            return ret
         except Exception as e:
             print("No Classes Found")
             return False

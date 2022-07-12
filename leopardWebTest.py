@@ -64,14 +64,12 @@ class userTest(unittest.TestCase):
         self.inst = instructorController()
         self.course = courseController()
 
-        self.inst.createInstructor(20110, 'pword', 'Aaron', 'Carpenter', 'Assistant Professor', '2002', 'Electrical', 'acarpenter')
-        self.course.createCourse(401142, "Cyber-Physical Systems", "BSEE", "MWF", "1:00pm-2:50pm", "Spring", "2022", 3, 20110)
-        self.course.createCourse(401156, "Computer Architecture", "BSCO", "TR", "4:00pm-6:00pm", "Spring", "2022", 3, 20110)
-        self.course.createCourse(401532, "Parallel Programming", "BCOS", "MWR", "11:00am-12:00pm", "Spring", "2022", 3, 20110)
+        self.inst.createInstructor(201100, 'pword', 'Aaron', 'Carpenter', 'Assistant Professor', '2002', 'Electrical', 'acarpenter')
+        self.course.createCourse(4011423, "Cyber-Physical Systems", "BSEE", "MWF", "1:00pm-2:50pm", "Spring", "2022", 3, 201100)
 
     #test search course by CRN
     def testSearchCourseByCRN(self):
-        self.assertTrue(self.user.searchCourseByCrn(401142))
+        self.assertTrue(self.user.searchCourseByCrn(4011423))
 
     #test search course by invalid CRN
 #    def testSearchCourseByFalseCRN(self):
@@ -79,7 +77,7 @@ class userTest(unittest.TestCase):
 
     #test search course by name
 #    def testSearchCourseByName(self):
-#        self.assertTrue(self.user.searchCourseByName('Computer Architecture'))
+#        self.assertTrue(self.user.searchCourseByName('Cyber-Physical Systems'))
 
     #test search course by invalid name
 #    def testSearchCourseByFalseName(self):
@@ -87,7 +85,7 @@ class userTest(unittest.TestCase):
         
     #test search course by days
     def testSearchCourseByDays(self):
-        self.assertTrue(self.user.searchCourseByDay('MWR'))
+        self.assertTrue(self.user.searchCourseByDay('MWF'))
 
     #test search course by invalid days
 #    def testSearchCourseByFalseDays(self):
@@ -100,6 +98,11 @@ class userTest(unittest.TestCase):
     #test search course by invalid time
 #    def testSearchCourseByFalseTime(self):
 #        self.assertFalse(self.user.searchCourseByTime('time'))
+
+    @classmethod
+    def tearDownClass(self):
+        self.inst.removeInstructor(201100)
+        self.course.removeCourse(4011423)
 
 class instructorTest(unittest.TestCase):
     @classmethod
