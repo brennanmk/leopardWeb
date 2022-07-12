@@ -72,32 +72,32 @@ class userTest(unittest.TestCase):
         self.assertTrue(self.user.searchCourseByCrn(4011423))
 
     #test search course by invalid CRN
-#    def testSearchCourseByFalseCRN(self):
-#        self.assertFalse(self.user.searchCourseByCrn(0000000))
+    def testSearchCourseByFalseCRN(self):
+        self.assertFalse(self.user.searchCourseByCrn(0000000))
 
     #test search course by name
-#    def testSearchCourseByName(self):
-#        self.assertTrue(self.user.searchCourseByName('Cyber-Physical Systems'))
+    def testSearchCourseByName(self):
+        self.assertTrue(self.user.searchCourseByName('Cyber-Physical Systems'))
 
     #test search course by invalid name
-#    def testSearchCourseByFalseName(self):
-#        self.assertFalse(self.user.searchCourseByName('Course Name'))
+    def testSearchCourseByFalseName(self):
+        self.assertFalse(self.user.searchCourseByName('Course Name'))
         
     #test search course by days
     def testSearchCourseByDays(self):
         self.assertTrue(self.user.searchCourseByDay('MWF'))
 
     #test search course by invalid days
-#    def testSearchCourseByFalseDays(self):
-#        self.assertFalse(self.user.searchCourseByDay('days'))
+    def testSearchCourseByFalseDays(self):
+        self.assertFalse(self.user.searchCourseByDay('days'))
 
     #test search course by time
     def testSearchCourseByTime(self):
         self.assertTrue(self.user.searchCourseByTime('1:00pm-2:50pm'))
 
     #test search course by invalid time
-#    def testSearchCourseByFalseTime(self):
-#        self.assertFalse(self.user.searchCourseByTime('time'))
+    def testSearchCourseByFalseTime(self):
+        self.assertFalse(self.user.searchCourseByTime('time'))
 
     @classmethod
     def tearDownClass(self):
