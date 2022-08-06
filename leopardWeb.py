@@ -2,6 +2,7 @@ from database import *
 
 # Brennan
 
+
 class user:
     def __init__(self):
         self.stud = studentController()
@@ -13,26 +14,36 @@ class user:
         try:
             ret = False
             data = self.crs.printCourse()
-
+            courseReg = False
             for val in data:
                 ret = True
                 print(
                     f"{val['crn']} | {val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found")
             return ret
+
         except Exception as e:
             print("No Classes Found")
-            return False        
+            return False
 
     def searchCourseByName(self, name):
         try:
             ret = False
             data = self.crs.searchCourseByName(name)
+            courseReg = False
 
             for val in data:
                 ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found")
             return ret
+
         except Exception as e:
             print("No Classes Found")
             return False
@@ -41,12 +52,17 @@ class user:
         try:
             ret = False
             data = self.crs.searchCourseByCrn(crn)
+            courseReg = False
 
             for val in data:
                 ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found")
             return ret
+
         except Exception as e:
             print("No Classes Found")
             return False
@@ -56,25 +72,35 @@ class user:
         try:
             ret = False
             data = self.crs.searchCourseByTime(time)
+            courseReg = False
 
             for val in data:
                 ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found")
             return ret
         except Exception as e:
             print("No Classes Found")
-            return False       
+            return False
 
     def searchCourseByDay(self, days):
         try:
             ret = False
             data = self.crs.searchCourseByDay(days)
+            courseReg = False
 
             for val in data:
                 ret = True
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found")
+
             return ret
         except Exception as e:
             print("No Classes Found")
@@ -93,9 +119,13 @@ class student(user):
 
     def addClass(self, crn):
         try:
-            self.crs.addStudentTo(self.uid, crn)
-            print("Class Added")
-            return True
+            ret = self.crs.addStudentTo(self.uid, crn)
+            if ret:
+                print("Class Added")
+                return True
+            else:
+                print("Class Not Valid")
+                return False
         except Exception as e:
             print("Error")
             return False
@@ -111,14 +141,21 @@ class student(user):
 
     def printSchedule(self):
         try:
-            data =  self.stud.printSchedule(self.uid)
+            data = self.stud.printSchedule(self.uid)
+            courseReg = False
+            print("\n")
 
             for val in data:
                 print(
                     f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+                courseReg = True
+            print("\n")
+
+            if courseReg == False:
+                print("\nNo Classes Found\n")
             return True
         except Exception as e:
-            print("No Classes Found")
+            print(e)
             return False
 
 
@@ -133,23 +170,39 @@ class instructor(user):
     def printSchedule(self):
         try:
             data = self.inst.printSchedule(self.uid)
-
+            courseReg = False
+            print("\n")
             for val in data:
-                print(
-                    f"{val['title']} | {val['instructor']} | {val['time']} | {val['credit']}")
+                
+                print(f"{val['title']} | {val['crn']} | {val['time']} | {val['days']}")
+
+                courseReg = True
+            print("\n")
+
+            if courseReg == False:
+                print("\nNo Classes Found\n")
             return True
         except Exception as e:
-            print("No Classes Found")
+            print(e)
             return False
 
     def printClassList(self, crn):
         try:
             data = self.crs.printRoster(crn)
+            courseReg = False
+
+            print("\n")
+
             for val in data:
-                print(f"{val['uid']} | {val['name']}" | {val['email']})
+                print(f"{val['uid']} | {val['name']} | {val['email']}")
+                courseReg = True
+            print("\n")
+
+            if courseReg == False:
+                print("\nNo Classes Found\n")
             return True
         except Exception as e:
-            print("Error")
+            print(e)
             return False
 
 
@@ -166,7 +219,8 @@ class admin(user):
     # add course to COURSE db
     def addCourse(self, crn, title, dept, time, days, semester, year, creditVal, instructor):
         try:
-            self.crs.createCourse(crn, title, dept, time, days, semester, year, creditVal, instructor)
+            self.crs.createCourse(crn, title, dept, time,
+                                  days, semester, year, creditVal, instructor)
             print("Course added")
             return True
         except Exception as e:
@@ -204,7 +258,8 @@ class admin(user):
     # add student to STUDENT db
     def addStudent(self, uid, pword, fname, lname, gradyear, major, email):
         try:
-            self.stud.createStudent(uid, pword, fname, lname, gradyear, major, email)
+            self.stud.createStudent(
+                uid, pword, fname, lname, gradyear, major, email)
             print("Student added")
             return True
         except Exception as e:
@@ -214,7 +269,8 @@ class admin(user):
     # add instructor to INSTRUCTOR db
     def addInstructor(self, uid, pword, fname, lname, title, hireyear, dept, email):
         try:
-            self.inst.createInstructor(uid, pword, fname, lname, title, hireyear, dept, email)
+            self.inst.createInstructor(
+                uid, pword, fname, lname, title, hireyear, dept, email)
             print("Instructor added")
             return True
         except Exception as e:
@@ -223,13 +279,13 @@ class admin(user):
 
     def addAdmin(self, uid, pword, fname, lname, title, office, email):  # add admin to ADMIN db
         try:
-            self.adm.createAdmin(uid, pword, fname, lname, title, office, email)
+            self.adm.createAdmin(uid, pword, fname, lname,
+                                 title, office, email)
             print("Admin added")
             return True
         except Exception as e:
             print("Error")
             return False
-            
 
     def removeStudent(self, uid):  # remove student from STUDENT db
         try:
@@ -263,21 +319,40 @@ class admin(user):
     def printRoster(self, crn):
         try:
             data = self.crs.printRoster(crn)
+            courseReg = False
+
             for val in data:
                 print(f"{val['uid']} | {val['name']} | {val['email']}")
+                courseReg = True
+            if courseReg == False:
+                print("\nNo Classes Found\n")
             return True
         except Exception as e:
             print("Error")
             return False
+    
+    def updateCourse(self, crn, newCrn = None, title = None, dept = None, time = None, days = None, semester = None, year = None, creditVal = None, instructor = None):
+        try:
+            ret = self.crs.updateCourse(crn, newCrn, title, dept, time, days, semester, year, creditVal, instructor)
+            if ret == True:
+                print("Course updated")
+                return True
+            else:
+                print("Error, course not updated")
+                return False
+        except Exception as e:
+            print("Error")
+            return False
+
 
 class leopardWeb():
     def __init__(self):
+        print("Welcome to LeopardWeb!\n")
         self.menu()
 
     def menu(self):
         retry = True
         while(retry):
-            print("Welcome to LeopardWeb!\n")
             print("Please select an option:")
             print("1. Login as a student")
             print("2. Login as an instructor")
@@ -312,7 +387,7 @@ class leopardWeb():
 
         retry = True
         while(retry):
-            print("Please select an option:")
+            print("\nPlease select an option:")
             print("1. Search for a class")
             print("2. Add a class")
             print("3. Drop a class")
@@ -324,6 +399,8 @@ class leopardWeb():
                 print("2. Search for a class by CRN")
                 print("3. Search for a class by time")
                 print("4. Search for a class by day")
+                print("5. Print all courses")
+
                 res = input("Enter your choice: ")
                 if res == "1":
                     print("Please enter the name of the class:")
@@ -336,14 +413,24 @@ class leopardWeb():
                     self.student.searchCourseByCrn(crn)
 
                 elif res == "3":
-                    print("Please enter the time of the class:")
-                    time = input("Time: ")
+                    print("Format is: (1:00pm-2:50pm)")
+                    print("Please enter the meeting time of the class:")
+                    time = input("Meeting time: ")
                     self.student.searchCourseByTime(time)
 
                 elif res == "4":
-                    print("Please enter the day of the class:")
-                    days = input("Day: ")
+                    print("M = Monday")
+                    print("T = Tuesday")
+                    print("W = Wednesday")
+                    print("R = Thursday")
+                    print("F = Friday")
+                    print("Combine days with no spaces - such as (MWF) or (TR)")
+                    print("Please enter the meeting days of the class:")
+                    days = input("Meeting Days: ")
                     self.student.searchCourseByDay(days)
+
+                elif res == "5":  # print all courses
+                    self.student.printCourse()
 
                 else:
                     print("Invalid input.")
@@ -378,7 +465,7 @@ class leopardWeb():
         # Zach
         retry = True
         while (retry):
-            print("Please select an option:")
+            print("\nPlease select an option:")
             print("1. Search for a course")
             print("2. Add course to system")
             print("3. Remove course from system")
@@ -387,7 +474,8 @@ class leopardWeb():
             print("6. Add user to system")
             print("7. Remove user from system")
             print("8. Print roster of course by CRN")
-            print("9. Logout")
+            print("9. Update Course Information")
+            print("10. Logout")
             res = input("Enter your choice: ")
             if res == "1":  # search course
                 print("1. Search for a class by name")
@@ -422,8 +510,10 @@ class leopardWeb():
                     print("Please enter the meeting time of the class:")
                     time = input("Meeting time: ")
                     self.admin.searchCourseByTime(time)
+
                 elif res == "5":  # print all courses
                     self.admin.printCourse()
+
                 else:
                     print("Invalid input.")
             elif res == "2":  # add course
@@ -513,7 +603,74 @@ class leopardWeb():
                 crn = input("CRN: ")
                 self.admin.printRoster(crn)
 
-            elif res == "9":  # logout
+            elif res == "9":  # update course information
+                print("1. Update CRN")
+                print("2. Update Name")
+                print("3. Update Department")
+                print("4. Update Meeting Time")
+                print("5. Update Meeting Days")
+                print("6. Update Semester")
+                print("7. Update Year")
+                print("8. Update Credits")
+                print("9. Update Instructor")
+                res = input("Enter your choice: ")
+                if res == "1":  # update CRN
+                    print("Please enter the old CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new CRN")
+                    new_crn = input("New CRN: ")
+                    self.admin.updateCourse(crn, newCrn = new_crn)
+                elif res == "2":  # update name
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new name")
+                    new_name = input("New name: ")
+                    self.admin.updateCourse(crn, title = new_name)
+                elif res == "3":  # update department
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new department")
+                    new_dept = input("New department: ")
+                    self.admin.updateCourse(crn, dept = new_dept)
+                elif res == "4":  # update meeting time
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new meeting time")
+                    new_time = input("New meeting time: ")
+                    self.admin.updateCourse(crn, time = new_time)
+                elif res == "5":  # update meeting days
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new meeting days")
+                    new_days = input("New meeting days: ")
+                    self.admin.updateCourse(crn, days = new_days)
+                elif res == "6":  # update semester
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new semester")
+                    new_semester = input("New semester: ")
+                    self.admin.updateCourse(crn, semester = new_semester)
+                elif res == "7":  # update year
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new year")
+                    new_year = input("New year: ")
+                    self.admin.updateCourse(crn, year = new_year)
+                elif res == "8":  # update credits
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new credits")
+                    new_credits = input("New credits: ")
+                    self.admin.updateCourse(crn, creditVal = new_credits)
+                elif res == "9":  # update instructor
+                    print("Please enter the CRN of the course")
+                    crn = input("CRN: ")
+                    print("Please enter the new instructor")
+                    new_instructor = input("New instructor: ")
+                    self.admin.updateCourse(crn, instructor = new_instructor)
+                else:
+                    print("Invalid input.")
+            elif res == "10":  # logout
                 self.menu()
             else:
                 print("Invalid Input.")
@@ -535,7 +692,7 @@ class leopardWeb():
                 print("Invalid ID or password. Please try again.")
         retry = True
         while(retry):
-            print("Please select an option:")
+            print("\nPlease select an option:")
             print("1. Search for a class")
             print("2. Print your schedule")
             print("3. Print class list")
@@ -544,8 +701,10 @@ class leopardWeb():
             if res == "1":
                 print("1. Search for a class by name")
                 print("2. Search for a class by CRN")
-                print("3. Search for a class by instructor")
+                print("3. Search for a class by meeting day")
                 print("4. Search for a class by time")
+                print("5. Display All")
+
                 res = input("Enter your choice: ")
                 if res == "1":
                     print("Please enter the name of the class:")
@@ -558,14 +717,24 @@ class leopardWeb():
                     self.instructor.searchCourseByCrn(crn)
 
                 elif res == "3":
-                    print("Please enter the name of the instructor:")
-                    name = input("Name: ")
-                    self.instructor.searchCourseByInstructor(name)
+                    print("M = Monday")
+                    print("T = Tuesday")
+                    print("W = Wednesday")
+                    print("R = Thursday")
+                    print("F = Friday")
+                    print("Combine days with no spaces - such as (MWF) or (TR)")
+                    print("Please enter the meeting days of the class:")
+                    days = input("Meeting Days: ")
+                    self.admin.searchCourseByDay(days)
 
                 elif res == "4":
-                    print("Please enter the time of the class:")
-                    time = input("Time: ")
+                    print("Format is: (1:00pm-2:50pm)")
+                    print("Please enter the meeting time of the class:")
+                    time = input("Meeting time: ")
                     self.instructor.searchCourseByTime(time)
+                
+                elif res == "5":
+                    self.instructor.printCourse()
 
                 else:
                     print("Invalid input.")
@@ -576,10 +745,11 @@ class leopardWeb():
                 crn = input("CRN: ")
                 # Zach - added fix to print info properly
                 # now displays as (student_name | student_id)
-                self.instructor.printRoster(crn)
+                self.instructor.printClassList(crn)
 
             elif res == "4":
                 self.menu()
+
 
 if __name__ == '__main__':
     leopardWeb()

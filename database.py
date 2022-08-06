@@ -51,19 +51,18 @@ class COURSE(BaseModel):
     semester = CharField()
     year = CharField()
     credit = IntegerField()
-    instructor = ForeignKeyField(INSTRUCTOR, backref='courses')
+    instructor = CharField()
 
 
 class COURSE_LIST(BaseModel):
-    students = ForeignKeyField(STUDENT, backref='courses')
-    course = ForeignKeyField(COURSE, backref='courses')
+    students = CharField()
+    course = CharField()
 
 
 class courseController():
     def createCourse(self, crnEntry, titleEntry, departmentEntry, dayEntry, timeEntry, semesterEntry, yearEntry, creditEntry, instructorEntry):
-        instr = INSTRUCTOR.get(INSTRUCTOR.UID == instructorEntry)
         COURSE.create(crn=crnEntry, title=titleEntry, department=departmentEntry, time=timeEntry,
-                      days=dayEntry, semester=semesterEntry, year=yearEntry, credit=creditEntry, instructor=instr)
+                      days=dayEntry, semester=semesterEntry, year=yearEntry, credit=creditEntry, instructor=instructorEntry)
 
     def removeCourse(self, crnVal):
         '''remove COURSE based on CRN'''
@@ -76,7 +75,11 @@ class courseController():
             csrEntry = {}
             csrEntry['crn'] = entry.crn
             csrEntry['title'] = entry.title
-            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == entry.instructor).get()
+                csrEntry['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                csrEntry['instructor'] = "N/A"            
             csrEntry['time'] = entry.time
             csrEntry['credit'] = entry.credit
             crsInfo.append(csrEntry)
@@ -90,7 +93,11 @@ class courseController():
         for entry in crs:
             csrEntry = {}
             csrEntry['title'] = entry.title
-            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == entry.instructor).get()
+                csrEntry['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                csrEntry['instructor'] = "N/A"
             csrEntry['time'] = entry.time
             csrEntry['credit'] = entry.credit
             crsInfo.append(csrEntry)
@@ -103,7 +110,11 @@ class courseController():
         for entry in crs:
             csrEntry = {}
             csrEntry['title'] = entry.title
-            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == entry.instructor).get()
+                csrEntry['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                csrEntry['instructor'] = "N/A"
             csrEntry['time'] = entry.time
             csrEntry['credit'] = entry.credit
             crsInfo.append(csrEntry)
@@ -117,7 +128,11 @@ class courseController():
         for entry in crs:
             csrEntry = {}
             csrEntry['title'] = entry.title
-            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == entry.instructor).get()
+                csrEntry['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                csrEntry['instructor'] = "N/A"
             csrEntry['time'] = entry.time
             csrEntry['credit'] = entry.credit
             crsInfo.append(csrEntry)
@@ -130,60 +145,82 @@ class courseController():
         for entry in crs:
             csrEntry = {}
             csrEntry['title'] = entry.title
-            csrEntry['instructor'] = entry.instructor.NAME + " " + entry.instructor.SURNAME
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == entry.instructor).get()
+                csrEntry['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                csrEntry['instructor'] = "N/A"
             csrEntry['time'] = entry.time
             csrEntry['credit'] = entry.credit
             crsInfo.append(csrEntry)
         return crsInfo
 
-    def addStudentTo(self, uid, crn):  # add student to course - update COURSE_LIST
-        stud = STUDENT.get(STUDENT.UID == uid)
-        crsEntry = COURSE.get(COURSE.crn == crn)
-        COURSE_LIST.create(students=stud, course=crsEntry)
+    def addStudentTo(self, uid, crn, overRide = False):  # add student to course - update COURSE_LIST
+        try:
+            desiredCrs = COURSE.select().where(COURSE.crn == crn).get()
+            
+            studCrsList = COURSE_LIST.select().where(COURSE_LIST.students == uid)
+            for entry in studCrsList:
+                studCourses = COURSE.select().where(COURSE.crn == entry.course).get()
+                if studCourses.time == desiredCrs.time and studCourses.days == desiredCrs.days:
+                    if overRide == False:
+                        print(f"Student has time conflict with {studCourses.title}")
+                        return False
+                    else:
+                        COURSE_LIST.create(students=uid, course=crn)
+                        return True
+            
+            COURSE_LIST.create(students=uid, course=crn)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     # remove student from course - update COURSE_LIST
     def removeStudentFrom(self, uid, crn):
-        stud = STUDENT.get(STUDENT.UID == uid)
-        crs = COURSE.get(COURSE.crn == crn)
-        COURSE_LIST.delete().where(COURSE_LIST.students == stud).where(
-            COURSE_LIST.course == crs).execute()
+
+        COURSE_LIST.delete().where(COURSE_LIST.students == uid).where(
+            COURSE_LIST.course == crn).execute()
 
     def printRoster(self, crn):
-        crs = COURSE.select().where(COURSE.crn == crn)
-        roster = COURSE_LIST.select().where(COURSE_LIST.course == crs)
+        roster = COURSE_LIST.select().where(COURSE_LIST.course == crn)
         crsList = []
         for entry in roster:
             data = {}
-            data['uid'] = entry.students.UID
-            data['name'] = entry.students.NAME + " " + entry.students.SURNAME
-            data['email'] = entry.students.EMAIL
+            stud = STUDENT.select().where(STUDENT.UID == entry.students).get()
+            data['uid'] = stud.UID
+            data['name'] = stud.NAME + " " + stud.SURNAME
+            data['email'] = stud.EMAIL
             crsList.append(data)
         return crsList
 
-    def updateCourse(self, crnEntry=None, titleEntry=None, departmentEntry=None, timeEntry=None, dayEntry=None, semesterEntry=None, yearEntry=None, creditEntry=None, instructorEntry=None):
+    def updateCourse(self, oldCrn, crnEntry, titleEntry, departmentEntry, timeEntry, dayEntry, semesterEntry, yearEntry, creditEntry, instructorEntry):
         '''update STUDENT, set any vals that should not be changed to null'''
-        crs = COURSE.select().where(COURSE.crn == crnEntry).dicts()
-        if crnEntry != None:
-            crs.crn = crnEntry
-        if titleEntry != None:
-            crs.title = titleEntry
-        if departmentEntry != None:
-            crs.department = departmentEntry
-        if timeEntry != None:
-            crs.time = timeEntry
-        if dayEntry != None:
-            crs.days = dayEntry
-        if semesterEntry != None:
-            crs.semester = semesterEntry
-        if yearEntry != None:
-            crs.year = yearEntry
-        if creditEntry != None:
-            crs.credit = creditEntry
-        if instructorEntry != None:
-            instr = INSTRUCTOR.get(INSTRUCTOR.UID == instructorEntry)
-            crs.instructor = instr
+        try:
+            crs = COURSE.select().where(COURSE.crn == oldCrn).get()
+            if crnEntry != None:
+                crs.crn = crnEntry
+            if titleEntry != None:
+                crs.title = titleEntry
+            if departmentEntry != None:
+                crs.department = departmentEntry
+            if timeEntry != None:
+                crs.time = timeEntry
+            if dayEntry != None:
+                crs.days = dayEntry
+            if semesterEntry != None:
+                crs.semester = semesterEntry
+            if yearEntry != None:
+                crs.year = yearEntry
+            if creditEntry != None:
+                crs.credit = creditEntry
+            if instructorEntry != None:
+                crs.instructor = instructorEntry
 
-        crs.save()
+            crs.save()
+            return True
+        except Exception as e:
+            return False
 
     def matchInstructor(self):
         '''List all available instructors for each course'''
@@ -217,19 +254,20 @@ class studentController():
         return stud.get()
 
     def printSchedule(self, uid):
-        stud = STUDENT.get(STUDENT.UID == uid)
         retList = []
-        for entry in COURSE_LIST:
-            if entry.students == stud:
-                data = {}
-                data['title'] = entry.course.title
-                try: #check to see if instructor is assigned to course
-                    data['instructor'] = entry.instructor.NAME + " " + entry.course.instructor.SURNAME
-                except Exception as e:
-                    data['instructor'] = "N/A"
-                data['time'] = entry.course.time
-                data['credit'] = entry.course.credit
-                retList.append(data)
+        cList = COURSE_LIST.select().where(COURSE_LIST.students == uid)
+        for entry in cList:
+            course = COURSE.select().where(COURSE.crn == entry.course).get()
+            data = {}
+            data['title'] = course.title
+            try: #check to see if instructor is assigned to course
+                instructorData = INSTRUCTOR.select().where(INSTRUCTOR.UID == course.instructor).get()
+                data['instructor'] = instructorData.NAME + " " + instructorData.SURNAME
+            except Exception as e:
+                data['instructor'] = "N/A"
+            data['time'] = course.time
+            data['credit'] = course.credit
+            retList.append(data)
         return retList
 
     def checkLogin(self, uid, pword):
@@ -279,16 +317,15 @@ class instructorController():
         return inst.get()
 
     def printSchedule(self, uid):
-        inst = INSTRUCTOR.get(INSTRUCTOR.UID == uid)
         retList = []
-        for entry in COURSE_LIST:
-            if entry.instructor == inst:
-                data = {}
-                data['title'] = entry.title
-                data['crn'] = entry.crn
-                data['time'] = entry.time
-                data['days'] = entry.days
-                retList.append(data)
+        courses = COURSE.select().where(COURSE.instructor == uid)
+        for crs in courses:
+            data = {}
+            data['title'] = crs.title
+            data['crn'] = crs.crn
+            data['time'] = crs.time
+            data['days'] = crs.days
+            retList.append(data)
         return retList
 
     def checkLogin(self, uid, pword):
