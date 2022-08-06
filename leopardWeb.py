@@ -400,7 +400,6 @@ class leopardWeb():
                 print("3. Search for a class by time")
                 print("4. Search for a class by day")
                 print("5. Print all courses")
-
                 res = input("Enter your choice: ")
                 if res == "1":
                     print("Please enter the name of the class:")

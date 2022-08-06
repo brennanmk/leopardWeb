@@ -1,4 +1,3 @@
-from ctypes.wintypes import PWORD
 import unittest
 from leopardWeb import *
 from database import *
@@ -143,7 +142,7 @@ class instructorTest(unittest.TestCase):
         self.assertTrue(self.inst.printSchedule())
     
     def testPrintClassList(self):
-        self.assertTrue(self.inst.printClassList(4011422))
+        self.assertTrue(self.inst.printClassList(401142))
    
     @classmethod
     def tearDownClass(self):

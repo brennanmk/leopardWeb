@@ -6,7 +6,7 @@ if __name__ == '__main__':
     instructor = instructorController()
     course =courseController()
 
-    #admins
+    #admins           ( id,   pword,  fname,    lname,      title,       office,         email )
     admin.createAdmin(30991, 'pword', 'Mark', 'Thompson', 'President', 'Williston100', 'thompsonm')
 
     #instructors 
