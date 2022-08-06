@@ -146,7 +146,7 @@ class instructor(user):
         try:
             data = self.crs.printRoster(crn)
             for val in data:
-                print(f"{val['uid']} | {val['name']}" | {val['email']})
+                print(f"{val['uid']} | {val['name']} | {val['email']}")
             return True
         except Exception as e:
             print("Error")
@@ -324,6 +324,7 @@ class leopardWeb():
                 print("2. Search for a class by CRN")
                 print("3. Search for a class by time")
                 print("4. Search for a class by day")
+                print("5. Print all courses")
                 res = input("Enter your choice: ")
                 if res == "1":
                     print("Please enter the name of the class:")
@@ -344,7 +345,8 @@ class leopardWeb():
                     print("Please enter the day of the class:")
                     days = input("Day: ")
                     self.student.searchCourseByDay(days)
-
+                elif res == "5":  # print all courses
+                    self.student.printCourse()
                 else:
                     print("Invalid input.")
             elif res == "2":
@@ -546,6 +548,7 @@ class leopardWeb():
                 print("2. Search for a class by CRN")
                 print("3. Search for a class by instructor")
                 print("4. Search for a class by time")
+                print("5. Print all courses")
                 res = input("Enter your choice: ")
                 if res == "1":
                     print("Please enter the name of the class:")
@@ -566,7 +569,8 @@ class leopardWeb():
                     print("Please enter the time of the class:")
                     time = input("Time: ")
                     self.instructor.searchCourseByTime(time)
-
+                elif res == "5":  # print all courses
+                    self.instructor.printCourse()
                 else:
                     print("Invalid input.")
             elif res == "2":
@@ -575,8 +579,8 @@ class leopardWeb():
                 print("Please enter the CRN of the class:")
                 crn = input("CRN: ")
                 # Zach - added fix to print info properly
-                # now displays as (student_name | student_id)
-                self.instructor.printRoster(crn)
+                # now displays as (student_id | student_name | student_email)
+                self.instructor.printClassList(crn)
 
             elif res == "4":
                 self.menu()
